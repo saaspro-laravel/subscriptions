@@ -1,0 +1,25 @@
+{
+    "name": "saaspro/subscriptions",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Utibe-Abasi Emmanuel",
+            "email": "utyemma@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "SaasPro\\Subscriptions": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "SaasPro\\Subscriptions\\SubscriptionServiceProvider"
+            ]
+        }
+    }
+}
