@@ -18,7 +18,7 @@ class SubscriptionBuilder {
     private Carbon $grace_ends_at;
     private Carbon $expires_at;
     private array $meta;
-    private bool $auto_renews;
+    private bool $auto_renews = true;
 
     private int $duration;
 
@@ -56,8 +56,7 @@ class SubscriptionBuilder {
         return $this->expires_at;
     }
 
-    public function withTrialPeriod(int $duration, ?Timelines $timeline = null){
-        $timeline ??= Timelines::DAY;
+    public function withTrialPeriod(int $duration, ?Timelines $timeline = Timelines::DAY){
         $this->trial_ends_at = $this->ends_at->add($timeline->value, $duration);
         return $this;
     }
@@ -82,8 +81,7 @@ class SubscriptionBuilder {
         return $this->ends_at;
     }
 
-    public function hasGracePeriod(int $duration, ?Timelines $timeline = null){
-        $timeline ??= Timelines::DAY;
+    public function hasGracePeriod(int $duration, ?Timelines $timeline = Timelines::DAY){
         $this->grace_ends_at = $this->ends_at?->add($timeline->value, $duration);
         return $this;
     }

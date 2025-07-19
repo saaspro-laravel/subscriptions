@@ -7,6 +7,9 @@
             "email": "utyemma@gmail.com"
         }
     ],
+    "require": {
+        "saaspro/saaspro": "self.version"
+    },
     "autoload": {
         "psr-4": {
             "SaasPro\\Subscriptions": "src/"

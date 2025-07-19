@@ -20,7 +20,7 @@ use SaasPro\Support\State;
 
 class Subscription extends Model {
     
-    protected $fillable = ['user_id', 'plan_id', 'price_id', 'timeline', 'expires_at', 'starts_at', 'auto_renews', 'meta', 'status', 'grace_ends_at', 'cancelled_at', 'provider', 'provider_id', 'reference'];
+    protected $fillable = ['user_id', 'name', 'plan_id', 'price_id', 'timeline', 'expires_at', 'starts_at', 'auto_renews', 'meta', 'status', 'grace_ends_at', 'cancelled_at', 'provider', 'provider_id', 'reference'];
 
     protected $casts = [
         'status' => SubscriptionStatus::class,
@@ -32,6 +32,18 @@ class Subscription extends Model {
         'grace_ends_at' => 'datetime',
         'cancelled_at' => 'datetime'
     ];  
+
+    protected $attribute = [
+        'name' => 'default'
+    ];
+
+    static public function booted(){
+        self::creating(function($subscription){
+            if(!$subscription->ends_at) {
+                $subscription->ends_at = Carbon::parse($subscription->starts_at)->add($subscription->timeline->days());
+            }
+        });
+    }
 
     // Relationships
     public function subscriber(){

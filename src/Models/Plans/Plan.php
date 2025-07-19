@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Plan extends Model {
-    use SoftDeletes, HasStatus;
+    use SoftDeletes;
     
     protected $fillable = ['name', 'description', 'is_popular', 'trial_period', 'sort', 'grace_period', 'is_default', 'is_free'];
 
@@ -21,13 +21,6 @@ class Plan extends Model {
 
     function scopeIsPaid($query) {
         $query->where('is_free', false);
-    }
-
-    function features(){
-        return $this->belongsToMany(Feature::class, 'plan_features')
-            ->withPivot(['id', 'limit', 'reset_period', 'reset_interval'])
-            ->as('feature')
-            ->withTimestamps();
     }
 
     function prices(){
