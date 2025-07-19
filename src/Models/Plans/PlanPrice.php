@@ -6,11 +6,17 @@ use SaasPro\Subscriptions\Concerns\Models\HasStatus;
 use Illuminate\Database\Eloquent\Model;
 use SaasPro\Subscriptions\Models\Plans\PlanCountryPrice;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use SaasPro\Enums\Timelines;
 
 class PlanPrice extends Model {
     use HasStatus;
     
-    protected $fillable = ['plan_id', 'amount', 'provider_id', 'timeline_id'];
+    protected $fillable = ['plan_id', 'amount', 'provider_id', 'timeline'];
+
+
+    protected $casts = [
+        'timeline' => Timelines::class
+    ];
 
     protected $with = ['prices'];
 
@@ -32,10 +38,6 @@ class PlanPrice extends Model {
                 return $value;
             }
         );
-    }
-
-    function timeline(){
-        return $this->belongsTo(Timeline::class, 'timeline_id');
     }
 
     function plan(){

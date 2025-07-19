@@ -3,12 +3,15 @@
 namespace SaasPro\Subscriptions\Models;
 
 use Carbon\Carbon;
+use Exception;
 use SaasPro\Subscriptions\Enums\PaymentGateways;
 use SaasPro\Subscriptions\Enums\Subscriptions\SubscriptionActions;
 use SaasPro\Subscriptions\Enums\SubscriptionStatus;
 use SaasPro\Subscriptions\Events\Subscriptions\SubscriptionStatusUpdated;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use SaasPro\Enums\Timelines;
+use SaasPro\Subscriptions\DataObjects\SubscriptionData;
 use SaasPro\Subscriptions\Models\Plans\PlanPrice;
 use SaasPro\Subscriptions\Models\Plans\Plan;
 use SaasPro\Subscriptions\Models\Transactions\Transaction;
@@ -17,10 +20,11 @@ use SaasPro\Support\State;
 
 class Subscription extends Model {
     
-    protected $fillable = ['user_id', 'plan_id', 'plan_price_id', 'expires_at', 'starts_at', 'auto_renews', 'meta', 'status', 'grace_ends_at', 'cancelled_at'];
+    protected $fillable = ['user_id', 'plan_id', 'price_id', 'timeline', 'expires_at', 'starts_at', 'auto_renews', 'meta', 'status', 'grace_ends_at', 'cancelled_at', 'provider', 'provider_id', 'reference'];
 
     protected $casts = [
         'status' => SubscriptionStatus::class,
+        'timeline' => Timelines::class,
         'meta' => 'array',
         'expires_at' => 'datetime',
         'starts_at' => 'datetime',
@@ -29,22 +33,20 @@ class Subscription extends Model {
         'cancelled_at' => 'datetime'
     ];  
 
+    // Relationships
     public function subscriber(){
         return $this->morphTo();
-    }
-
-    public function planPrice() {
-        return $this->belongsTo(PlanPrice::class, 'plan_price_id');
-    }
-
-    public function price() {
-        return $this->belongsTo(PlanPrice::class, 'plan_price_id');
     }
 
     public function plan(){
         return $this->belongsTo(Plan::class, 'plan_id');
     }
 
+    function price() {
+        return $this->belongsTo(PlanPrice::class, 'price_id');
+    }
+
+    // Scopes
     public function scopeIsActive(Builder $query){
         $query->whereBeforeToday('expires_at')->orWhereAfterToday('trial_ends_at');
     }
@@ -70,7 +72,6 @@ class Subscription extends Model {
         return $this->starts_at->diffInDays($this->expires_at);
     }
 
-    // Methods
     public function active () {
         return !$this->cancelled() || !$this->expired();
     }
@@ -118,7 +119,25 @@ class Subscription extends Model {
         return $this;
     }
 
-    
+    function swap(Plan $plan, Timelines | null $timeline = null) {
+        if($timeline) {
+            $this->timeline = $timeline;
+        }
+        
+        if(!$price = $plan->prices()->whereTimeline($this->timeline)->first()){
+            throw new Exception("The {$this->timeline->label()} timeline does not exist on plan {$plan->name}");
+        }
+
+        $this->price_id = $price->id;
+        $this->plan_id = $plan;
+        $this->save();
+
+        return $this;
+    }
+
+    function usage(){
+
+    }
 
 
 }
