@@ -18,6 +18,9 @@
             "src/helpers.php"
         ]
     },
+    "suggest": {
+        "filament/filament": "Required to access the admin panel"
+    },
     "extra": {
         "laravel": {
             "providers": [
