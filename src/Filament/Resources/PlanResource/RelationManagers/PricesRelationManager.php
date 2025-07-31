@@ -1,6 +1,6 @@
 <?php
 
-namespace SaasPro\Subscriptions\Filament\Resources\Plans\PlanResource\RelationManagers;
+namespace SaasPro\Subscriptions\Filament\Resources\PlanResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Forms\Components\Repeater;
@@ -8,8 +8,9 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use SaasPro\Enums\Timelines;
 use SaasPro\Filament\Forms\Components\SelectStatus;
-use Utyemma\SaasPro\Filament\Tables\Columns\StatusColumn;
+use SaasPro\Filament\Tables\Columns\StatusColumn;
 
 class PricesRelationManager extends RelationManager
 {
@@ -20,7 +21,7 @@ class PricesRelationManager extends RelationManager
         return $form
             ->schema([
                 Forms\Components\Select::make('timeline')
-                    ->relationship('timeline', 'name')
+                    ->options(Timelines::options())
                     ->native(false),
                 Forms\Components\TextInput::make('amount')
                     ->required()

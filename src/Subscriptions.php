@@ -3,7 +3,7 @@
 namespace SaasPro\Subscriptions;
 
 use SaasPro\Enums\Timelines;
-use SaasPro\Subscriptions\Models\Plans\Plan;
+use SaasPro\Subscriptions\Models\Plan;
 
 class Subscriptions {
 

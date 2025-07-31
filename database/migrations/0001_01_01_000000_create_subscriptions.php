@@ -13,7 +13,7 @@ return new class extends Migration {
             $table->text('description');
             $table->string('trial_period')->nullable();
             $table->string('grace_period')->nullable();
-            $table->string('status');
+            $table->boolean('status');
             $table->boolean('is_popular')->nullable();
             $table->boolean('is_default')->nullable();
             $table->boolean('is_free')->nullable();

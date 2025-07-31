@@ -1,6 +1,6 @@
 <?php
 
-namespace SaasPro\Subscriptions\Filament\Resources\Plans\PlanResource\RelationManagers;
+namespace SaasPro\Subscriptions\Filament\Resources\PlanResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -8,10 +8,11 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use SaasPro\Enums\Timelines;
+use SaasPro\Features\Models\Feature;
 
-class PlanFeaturesRelationManager extends RelationManager
+class FeaturesRelationManager extends RelationManager
 {
-    protected static string $relationship = 'planFeatures';
+    protected static string $relationship = 'features';
 
     public function form(Form $form): Form
     {
@@ -19,6 +20,7 @@ class PlanFeaturesRelationManager extends RelationManager
             ->schema([
                 Forms\Components\Select::make('feature_id')
                     ->relationship('feature', 'name')
+                    ->unique(ignoreRecord: true)
                     ->required(),
                 Forms\Components\TextInput::make('limit')
                     ->numeric(),
@@ -36,8 +38,9 @@ class PlanFeaturesRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('feature.name'),
                 Tables\Columns\TextColumn::make('limit'),
-                Tables\Columns\TextColumn::make('reset_interval'),
                 Tables\Columns\TextColumn::make('reset_period'),
+                Tables\Columns\TextColumn::make('reset_interval')
+                    ->formatStateUsing(fn($state) => $state->label()),
             ])
             ->filters([
                 //

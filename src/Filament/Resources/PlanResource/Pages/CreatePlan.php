@@ -2,7 +2,7 @@
 
 namespace SaasPro\Subscriptions\Filament\PlanResource\Pages;
 
-use SaasPro\Subscriptions\Filament\Resources\Plans\PlanResource;
+use SaasPro\Subscriptions\Filament\Resources\PlanResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 

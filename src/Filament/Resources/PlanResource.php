@@ -1,24 +1,27 @@
 <?php
 
-namespace SaasPro\Subscriptions\Filament\Resources\Plans;
+namespace SaasPro\Subscriptions\Filament\Resources;
 
-use SaasPro\Filament\Forms\Components\SelectStatus;
-use SaasPro\Subscriptions\Filament\Resources\Plans\PlanResource\Pages;
-use SaasPro\Subscriptions\Filament\Resources\Plans\PlanResource\RelationManagers;
+use SaasPro\Filament\Tables\Columns\StatusColumn;
+use SaasPro\Subscriptions\Filament\PlanResource\Pages\CreatePlan;
+use SaasPro\Subscriptions\Filament\PlanResource\Pages\ListPlans;
+use SaasPro\Subscriptions\Filament\Resources\PlanResource\RelationManagers;
 use Filament\Forms;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
+use SaasPro\Subscriptions\Filament\Resources\Plans\PlanResource\Pages\EditPlan;
 use SaasPro\Subscriptions\Models\Plan;
-use Utyemma\SaasPro\Filament\Tables\Columns\StatusColumn;
 
 class PlanResource extends Resource {
     
     protected static ?string $model = Plan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-circle-stack';
-    protected static ?string $navigationGroup = 'Configuration';
+    protected static ?string $navigationGroup = 'Subscriptions';
 
     public static function form(Form $form): Form
     {
@@ -42,7 +45,8 @@ class PlanResource extends Resource {
                 Forms\Components\TextInput::make('sort')
                     ->numeric()
                     ->maxLength(255),
-                SelectStatus::make('status')
+                Forms\Components\Toggle::make('status')
+                    ->default(true)
                     ->required(),
                 Forms\Components\Toggle::make('is_popular')
                         ->required(),
@@ -60,7 +64,7 @@ class PlanResource extends Resource {
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextInputColumn::make('sort')
-                    ->width('w-xs')
+                    ->width('5px')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_popular')
                     ->boolean(),
@@ -72,7 +76,7 @@ class PlanResource extends Resource {
                     ->boolean(),
                 Tables\Columns\IconColumn::make('is_free')
                     ->boolean(),
-                StatusColumn::make('status'),
+                ToggleColumn::make('status'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -99,16 +103,16 @@ class PlanResource extends Resource {
     {
         return [
             RelationManagers\PricesRelationManager::class,
-            RelationManagers\PlanFeaturesRelationManager::class
+            RelationManagers\FeaturesRelationManager::class
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPlans::route('/'),
-            'create' => Pages\CreatePlan::route('/create'),
-            'edit' => Pages\EditPlan::route('/{record}/edit'),
+            'index' => ListPlans::route('/'),
+            'create' => CreatePlan::route('/create'),
+            'edit' => EditPlan::route('/{record}/edit'),
         ];
     }
 }

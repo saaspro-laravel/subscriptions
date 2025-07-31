@@ -1,9 +1,9 @@
 <?php
 
-namespace SaasPro\Subscriptions\Filament\Resources\Billing;
+namespace SaasPro\Subscriptions\Filament\Resources;
 
-use SaasPro\Subscriptions\Filament\Resources\Billing\SubscriptionResource\Pages;
-use SaasPro\Subscriptions\Filament\Resources\Billing\SubscriptionResource\RelationManagers;
+use SaasPro\Subscriptions\Filament\Resources\SubscriptionResource\Pages;
+use SaasPro\Subscriptions\Filament\Resources\SubscriptionResource\RelationManagers;
 use SaasPro\Subscriptions\Models\Subscription;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -11,7 +11,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Utyemma\SaasPro\Filament\Tables\Columns\StatusColumn;
+use SaasPro\Filament\Tables\Columns\StatusColumn;
 
 class SubscriptionResource extends Resource
 {
@@ -19,7 +19,7 @@ class SubscriptionResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-path-rounded-square';
 
-    protected static ?string $navigationGroup = 'Billing';
+    protected static ?string $navigationGroup = 'Subscriptions';
 
     public static function form(Form $form): Form
     {
