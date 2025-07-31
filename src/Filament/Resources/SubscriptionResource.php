@@ -1,20 +1,17 @@
 <?php
 
-namespace Utyemma\SaasPro\Filament\Resources\Billing;
+namespace SaasPro\Subscriptions\Filament\Resources\Billing;
 
-use Utyemma\SaasPro\Filament\Resources\Billing\SubscriptionResource\Pages;
-use Utyemma\SaasPro\Filament\Resources\Billing\SubscriptionResource\RelationManagers;
-use Utyemma\SaasPro\Models\Subscription;
-use Utyemma\SaasPro\Filament\Tables\Columns\StatusColumn;
-use Filament\Forms;
+use SaasPro\Subscriptions\Filament\Resources\Billing\SubscriptionResource\Pages;
+use SaasPro\Subscriptions\Filament\Resources\Billing\SubscriptionResource\RelationManagers;
+use SaasPro\Subscriptions\Models\Subscription;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Utyemma\SaasPro\Filament\Tables\Columns\StatusColumn;
 
 class SubscriptionResource extends Resource
 {

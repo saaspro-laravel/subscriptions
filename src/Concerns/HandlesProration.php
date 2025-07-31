@@ -1,9 +1,9 @@
 <?php
 
-namespace Utyemma\SaasPro\Concerns\Subscriptions;
+namespace SaasPro\Subscriptions\Concerns;
 
-use Utyemma\SaasPro\Models\Plans\PlanPrice;
-use Utyemma\SaasPro\Models\Subscription;
+use SaasPro\Subscriptions\Models\PlanPrice;
+use SaasPro\Subscriptions\Models\Subscription;
 
 trait HandlesProration {
 

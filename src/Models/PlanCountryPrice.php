@@ -1,9 +1,9 @@
 <?php
 
-namespace Utyemma\SaasPro\Models\Plans;
+namespace SaasPro\Subscriptions\Models;
 
-use Utyemma\SaasPro\Models\Country;
 use Illuminate\Database\Eloquent\Model;
+use SaasPro\Locale\Models\Country;
 
 class PlanCountryPrice extends Model {
     

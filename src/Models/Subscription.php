@@ -4,19 +4,10 @@ namespace SaasPro\Subscriptions\Models;
 
 use Carbon\Carbon;
 use Exception;
-use SaasPro\Subscriptions\Enums\PaymentGateways;
-use SaasPro\Subscriptions\Enums\Subscriptions\SubscriptionActions;
 use SaasPro\Subscriptions\Enums\SubscriptionStatus;
-use SaasPro\Subscriptions\Events\Subscriptions\SubscriptionStatusUpdated;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use SaasPro\Enums\Timelines;
-use SaasPro\Subscriptions\DataObjects\SubscriptionData;
-use SaasPro\Subscriptions\Models\Plans\PlanPrice;
-use SaasPro\Subscriptions\Models\Plans\Plan;
-use SaasPro\Subscriptions\Models\Transactions\Transaction;
-use SaasPro\Subscriptions\Services\TransactionService;
-use SaasPro\Support\State;
 
 class Subscription extends Model {
     

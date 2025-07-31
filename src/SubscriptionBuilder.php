@@ -7,7 +7,7 @@ use Carbon\CarbonInterval;
 use Reflection;
 use ReflectionClass;
 use SaasPro\Enums\Timelines;
-use SaasPro\Subscriptions\Models\Plans\Plan;
+use SaasPro\Subscriptions\Models\Plan;
 use SaasPro\Subscriptions\Models\Subscription;
 
 class SubscriptionBuilder {

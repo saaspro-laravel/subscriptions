@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use SaasPro\Enums\Timelines;
-use SaasPro\Subscriptions\Models\Plans\Plan;
+use SaasPro\Subscriptions\Models\Plan;
 use SaasPro\Subscriptions\Models\Subscription;
 
 /**

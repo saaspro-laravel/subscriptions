@@ -1,15 +1,15 @@
 <?php
 
-namespace SaasPro\Subscriptions\Models\Plans;
+namespace SaasPro\Subscriptions\Models;
 
-use SaasPro\Subscriptions\Concerns\Models\HasStatus;
 use Illuminate\Database\Eloquent\Model;
-use SaasPro\Subscriptions\Models\Plans\PlanCountryPrice;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use SaasPro\Concerns\Models\HasStatus;
 use SaasPro\Enums\Timelines;
+use Utyemma\Relatable\Concerns\HasRelatable;
 
 class PlanPrice extends Model {
-    use HasStatus;
+    use HasStatus, HasRelatable;
     
     protected $fillable = ['plan_id', 'amount', 'provider_id', 'timeline'];
 
@@ -45,7 +45,7 @@ class PlanPrice extends Model {
     }
 
     function prices(){
-        return $this->hasMany(PlanCountryPrice::class, 'price_id');
+        return $this->hasManyRelatables(PlanCountryPrice::class, 'price_id');
     }
 
     // function getPriceAttribute(){

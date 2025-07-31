@@ -1,15 +1,13 @@
 <?php
 
-namespace Utyemma\SaasPro\Filament\Resources\Plans\PlanResource\RelationManagers;
+namespace SaasPro\Subscriptions\Filament\Resources\Plans\PlanResource\RelationManagers;
 
-use Utyemma\SaasPro\Enums\Timelines;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use SaasPro\Enums\Timelines;
 
 class PlanFeaturesRelationManager extends RelationManager
 {

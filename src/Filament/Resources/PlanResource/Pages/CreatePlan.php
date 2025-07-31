@@ -1,8 +1,8 @@
 <?php
 
-namespace Utyemma\SaasPro\Filament\Resources\Plans\PlanResource\Pages;
+namespace SaasPro\Subscriptions\Filament\PlanResource\Pages;
 
-use Utyemma\SaasPro\Filament\Resources\Plans\PlanResource;
+use SaasPro\Subscriptions\Filament\Resources\Plans\PlanResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 

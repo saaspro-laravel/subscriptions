@@ -1,8 +1,8 @@
 <?php
 
-namespace Utyemma\SaasPro\Filament\Resources\Billing\SubscriptionResource\Pages;
+namespace SaasPro\Subscriptions\Filament\Resources\Billing\SubscriptionResource\Pages;
 
-use Utyemma\SaasPro\Filament\Resources\Billing\SubscriptionResource;
+use SaasPro\Subscriptions\Filament\Resources\Billing\SubscriptionResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 

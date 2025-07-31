@@ -1,17 +1,13 @@
 <?php
 
-namespace Utyemma\SaasPro\Concerns\Subscriptions;
+namespace SaasPro\Subscriptions\Concerns;
 
-use SaasPro\Enums\Timelines;
 use SaasPro\Subscriptions\DataObjects\SubscriptionData;
-use SaasPro\Subscriptions\Models\Plans\Plan;
 use SaasPro\Subscriptions\Models\Subscription;
-use SaasPro\Subscriptions\SubscriptionBuilder;
 
 trait CanSubscribe {
 
-    protected static function bootHasSubscriptions(): void
-    {
+    protected static function bootHasSubscriptions(): void {
         static::deleted(function ($subscriber): void {
             $subscriber->subscriptions()->delete();
         });

@@ -1,12 +1,10 @@
 <?php
 
-namespace SaasPro\Subscriptions\Models\Plans;
+namespace SaasPro\Subscriptions\Models;
 
-use SaasPro\Subscriptions\Concerns\Models\HasStatus;
-use SaasPro\Subscriptions\Models\Features\Feature;
-use SaasPro\Subscriptions\Models\Features\PlanFeature;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Utyemma\Relatable\HasRelatable;
 
 class Plan extends Model {
     use SoftDeletes;

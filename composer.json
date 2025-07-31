@@ -13,10 +13,7 @@
     "autoload": {
         "psr-4": {
             "SaasPro\\Subscriptions\\": "src/"
-        },
-        "files": [
-            "src/helpers.php"
-        ]
+        }
     },
     "suggest": {
         "filament/filament": "Required to access the admin panel"
@@ -25,6 +22,11 @@
         "laravel": {
             "providers": [
                 "SaasPro\\Subscriptions\\SubscriptionServiceProvider"
+            ]
+        },
+        "saaspro": {
+            "providers": [
+                "SaasPro\\Subscriptions\\PluginProvider"
             ]
         }
     }
