@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use SaasPro\Enums\Timelines;
 use SaasPro\Subscriptions\Models\Plan;
+use SaasPro\Subscriptions\Models\PlanPrice;
 use SaasPro\Subscriptions\Models\Subscription;
 
 /**
@@ -46,10 +47,11 @@ final class SubscriptionData {
 
     public ?Model $subscriber = null;
     public ?Plan $plan = null;
+    public ?PlanPrice $price = null;
     public ?Subscription $subscription = null;
     public ?Timelines $timeline = null;
-    public ?bool $auto_renews = null;
     public Carbon|string $expires_at;
+    public Carbon|string $trial_ends_at;
     public Carbon|string $starts_at;
     public Carbon|string $grace_ends_at;
     public Carbon|string $cancelled_at;
@@ -57,6 +59,7 @@ final class SubscriptionData {
     public ?string $provider_id = null;
     public array $meta = [];
     public string $status = '';
+
 
     /**
      * @param array<string, mixed> $data
@@ -104,6 +107,17 @@ final class SubscriptionData {
         return $this;
     }
 
+    function newSubscription(){
+        $data = $this->collect()->except(['subscriber', 'plan', 'price']);
+
+        $subscription = new Subscription($data->toArray());
+        $subscription->subscriber()->associate($this->subscriber);
+        $subscription->plan()->associate($this->plan);
+        $subscription->price()->associate($this->price);
+
+        return $subscription;
+    }
+
     /**
      * @param string $provider
      * @param string|null $provider_id
@@ -139,8 +153,39 @@ final class SubscriptionData {
      * @param Plan $plan
      * @return $this
      */
-    public function setPlan(Plan $plan): self {
+    public function setPlan(Plan|string $plan, PlanPrice|string|Timelines|null $planPrice = null): self {
+        if(is_string($plan)) {
+            if (!$plan = Plan::find($plan)) {
+                throw new \InvalidArgumentException("Plan with ID {$plan} not found.");
+            }
+        }
+        
         $this->plan = $plan;
+
+        if($planPrice) $this->setPrice($planPrice);
+        return $this;
+    }
+
+    /**
+     * @param Plan $plan
+     * @return $this
+     */
+    public function setPrice(PlanPrice|string|Timelines $price): self {
+        if(!$this->plan) throw new \InvalidArgumentException("Plan must be set before setting price.");
+
+        if(is_string($price)) {
+            if (!$price = $this->plan->prices()->where('id', $price)->first()) {
+                throw new \InvalidArgumentException("Plan Price with ID {$price} not found on plan {$this->plan->name}.");
+            }
+        }
+
+        if($price instanceof Timelines) {
+            if (!$price = $this->plan->prices()->where('timeline', $price)->first()) {
+                throw new \InvalidArgumentException("Plan Price with {$price->label()} timeline not found on plan {$this->plan->name}.");
+            }
+        }
+
+        $this->price = $price;
         return $this;
     }
 
@@ -159,6 +204,15 @@ final class SubscriptionData {
      */
     public function graceEndsAt(Carbon|string $grace_period): self {
         $this->grace_ends_at = $grace_period;
+        return $this;
+    }
+
+    /**
+     * @param Carbon|string $date
+     * @return $this
+     */
+    public function trialEndsAt(Carbon|string $date): self {
+        $this->trial_ends_at = $date;
         return $this;
     }
 

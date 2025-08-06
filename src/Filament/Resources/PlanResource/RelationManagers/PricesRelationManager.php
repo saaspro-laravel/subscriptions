@@ -18,19 +18,21 @@ class PricesRelationManager extends RelationManager
 
     public function form(Form $form): Form
     {
+        // dd($form->getRecord()->prices);
         return $form
             ->schema([
                 Forms\Components\Select::make('timeline')
+                    ->required()
                     ->options(Timelines::options())
                     ->native(false),
                 Forms\Components\TextInput::make('amount')
-                    ->required()
                     ->numeric()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('provider_id')
-                    ->required()
                     ->maxLength(255),
-                SelectStatus::make('status'),
+                SelectStatus::make('status')
+                    ->native(false)
+                    ->required(),
                 Repeater::make('countries')
                     ->relationship('prices')
                     ->label("Country Specific Prices")
@@ -47,7 +49,7 @@ class PricesRelationManager extends RelationManager
                             ->numeric()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('provider_id')
-                            ->required()
+                            ->nullable()
                             ->maxLength(255),
                     ])
             ]);
@@ -63,7 +65,8 @@ class PricesRelationManager extends RelationManager
                     ->numeric(),
                 Tables\Columns\TextColumn::make('provider_id')
                     ->numeric(),
-                Tables\Columns\TextColumn::make('timeline.name'),
+                Tables\Columns\TextColumn::make('timeline')
+                    ->formatStateUsing(fn($state) => $state->label()),
                 StatusColumn::make('status')
             ])
             ->filters([

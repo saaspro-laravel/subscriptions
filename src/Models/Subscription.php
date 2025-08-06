@@ -8,13 +8,14 @@ use SaasPro\Subscriptions\Enums\SubscriptionStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use SaasPro\Enums\Timelines;
+use SaasPro\Support\Token;
 
 class Subscription extends Model {
     
-    protected $fillable = ['user_id', 'name', 'plan_id', 'price_id', 'timeline', 'expires_at', 'starts_at', 'auto_renews', 'meta', 'status', 'grace_ends_at', 'cancelled_at', 'provider', 'provider_id', 'reference'];
+    // 'provider', 'provider_id',
+    protected $fillable = ['user_id', 'name', 'plan_id', 'price_id', 'expires_at', 'starts_at', 'meta', 'grace_ends_at', 'cancelled_at', 'reference'];
 
     protected $casts = [
-        'status' => SubscriptionStatus::class,
         'timeline' => Timelines::class,
         'meta' => 'array',
         'expires_at' => 'datetime',
@@ -24,14 +25,19 @@ class Subscription extends Model {
         'cancelled_at' => 'datetime'
     ];  
 
-    protected $attribute = [
+    protected $attributes = [
         'name' => 'default'
     ];
 
     static public function booted(){
         self::creating(function($subscription){
             if(!$subscription->ends_at) {
-                $subscription->ends_at = Carbon::parse($subscription->starts_at)->add($subscription->timeline->days());
+                $price = $subscription->price;
+                $subscription->expires_at = $subscription->starts_at->add($price->timeline->days(), 'days');
+            }
+
+            if(!$subscription->reference) {
+                $subscription->reference = Token::random(8)->prepend('SUB-')->upper()->unique(Subscription::class, 'reference');
             }
         });
     }
@@ -75,19 +81,19 @@ class Subscription extends Model {
         return $this->starts_at->diffInDays($this->expires_at);
     }
 
-    public function active () {
-        return !$this->cancelled() || !$this->expired();
+    public function active (): bool {
+        return !$this->cancelled() && !$this->ended();
     }
 
-    function onTrial(){
+    function onTrial(): bool{
         return $this->trial_ends_at && now()->lt($this->trial_ends_at);
     }
 
-    function onGrace(){
+    function onGrace(): bool{
         return $this->expired() && $this->grace_ends_at && now()->lt($this->grace_ends_at);
     }
 
-    function ended(){
+    function ended(): bool{
         return $this->expired() && !$this->onGrace();
     }
 
@@ -95,12 +101,31 @@ class Subscription extends Model {
         return $this->expires_at && now()->gte($this->expires_at);
     }
 
-    public function cancelled(){
-        return $this->cancelled_at;
+    public function cancelled(): bool {
+        return !!$this->cancelled_at;
+    }
+
+    function canResume(): bool{
+        return $this->cancelled() && !$this->ended();
+    }
+
+    public function getStatusAttribute(): SubscriptionStatus {
+        return match (true) {
+            $this->active() => SubscriptionStatus::ACTIVE,
+            $this->expired() => SubscriptionStatus::EXPIRED,
+            $this->cancelled() => SubscriptionStatus::CANCELLED,
+            $this->onTrial() => SubscriptionStatus::TRIALING,
+            $this->onGrace() => SubscriptionStatus::GRACE,
+            default => SubscriptionStatus::ACTIVE,
+        };
+    }
+
+    public function getAutoRenewsAttribute(){
+        return $this->cancelled() == false;
     }
 
     function renew(?Carbon $ends_at = null, ?bool $force = false){
-        if($this->ended() || !$force) {
+        if($this->ended() && !$force) {
             throw new \Exception('Unable to renew canceled ended subscription.');
         }
         
@@ -133,6 +158,18 @@ class Subscription extends Model {
 
         $this->price_id = $price->id;
         $this->plan_id = $plan;
+        $this->save();
+
+        return $this;
+    }
+
+    function resume(){
+        if(!$this->canResume()) {
+            throw new Exception('Unable to resume subscription.');
+        }
+
+        $this->cancelled_at = null;
+        $this->expires_at = $this->starts_at->add($this->price->timeline->days(), 'days');
         $this->save();
 
         return $this;

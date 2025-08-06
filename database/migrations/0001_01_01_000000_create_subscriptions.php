@@ -24,37 +24,38 @@ return new class extends Migration {
 
         Schema::create('plan_prices', function (Blueprint $table) {
             $table->id();
+            $table->double('amount')->nullable();
+            $table->string('timeline');
             $table->string('plan_id');
-            $table->string('amount');
-            $table->string('timeline_id');
             $table->string('provider_id')->nullable();
             $table->string('status');
             $table->timestamps();
         });
-
+        
         Schema::create('plan_country_prices', function (Blueprint $table) {
             $table->id();
             $table->string('country_id');
             $table->string('price_id');
             $table->double('price');
+            $table->string('provider_id')->nullable();
             $table->timestamps();
         });
 
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->string('user_id');
+            $table->string('name');
+            $table->uuidMorphs('subscriber');
             $table->string('plan_id');
-            $table->string('plan_price_id');
+            $table->string('price_id')->nullable();
+            $table->string('provider')->nullable();
             $table->string('expires_at')->nullable();
             $table->string('starts_at')->nullable();
             $table->string('grace_ends_at')->nullable();
             $table->string('trial_ends_at')->nullable();
             $table->string('cancelled_at')->nullable();
-            $table->string('provider');
             $table->string('reference')->nullable();
-            $table->boolean('auto_renews');
             $table->json('meta')->nullable();
-            $table->string('status');
+            $table->boolean('auto_renews');
             $table->timestamps();
         });
 

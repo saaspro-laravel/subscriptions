@@ -7,7 +7,7 @@ use SaasPro\Locale\Models\Country;
 
 class PlanCountryPrice extends Model {
     
-    protected $fillable = ['country_id', 'price_id', 'provider_id', 'price'];
+    protected $fillable = ['country_id', 'price_id', 'price'];
 
     function scopeIsCurrent($query){
         if($country = locale()->country()) $query->whereCountryId($country?->id);
