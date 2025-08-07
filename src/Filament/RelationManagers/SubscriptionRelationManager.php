@@ -11,6 +11,7 @@ use Filament\Forms\Set;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -72,14 +73,20 @@ class SubscriptionRelationManager extends RelationManager
                     ->copyable(),
                 Tables\Columns\TextColumn::make('plan')
                     ->getStateUsing(fn($record) => "{$record->plan->name} {$record->price->timeline->label()}"),
-                // Tables\Columns\TextColumn::make('price.timeline')
-                //     ->getStateUsing(fn($record) => $record->price?->timeline->label() ),
+                IconColumn::make('auto_renews')
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('starts_at')
                     ->dateTime()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('expires_at')
                     ->dateTime()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('trial_ends_at')
+                    ->dateTime()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('grace_ends_at')
+                    ->dateTime()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn($record) => $record->status->color()),

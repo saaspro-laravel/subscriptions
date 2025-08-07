@@ -37,4 +37,8 @@ trait CanSubscribe {
         return Subscription::create($subscriptionData->toArray()); 
     }
 
+    public function getSubscriberTitle(){
+        return $this->name;
+    }
+
 }

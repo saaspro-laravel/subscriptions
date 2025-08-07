@@ -4,13 +4,17 @@ namespace SaasPro\Subscriptions\Models;
 
 use Carbon\Carbon;
 use Exception;
+use SaasPro\Concerns\Models\HasHistory;
+use SaasPro\Contracts\SavesToHistory;
 use SaasPro\Subscriptions\Enums\SubscriptionStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use SaasPro\Enums\Timelines;
 use SaasPro\Support\Token;
 
-class Subscription extends Model {
+class Subscription extends Model implements SavesToHistory {
+    use HasHistory;
     
     // 'provider', 'provider_id',
     protected $fillable = ['user_id', 'name', 'plan_id', 'price_id', 'expires_at', 'starts_at', 'meta', 'grace_ends_at', 'cancelled_at', 'reference'];
@@ -40,6 +44,18 @@ class Subscription extends Model {
                 $subscription->reference = Token::random(8)->prepend('SUB-')->upper()->unique(Subscription::class, 'reference');
             }
         });
+    }
+
+    function getHistoryEvent($event){
+        return $this->status;
+    }
+
+    function getHistoryEntityName(): string{
+        return "Subscription";
+    }
+
+    function getHistoryEditorName(): string{
+        return $this->subscriber_title;
     }
 
     // Relationships
@@ -73,6 +89,10 @@ class Subscription extends Model {
     }
 
     // Attributes
+    public function getSubscriberTitleAttribute(){
+        return $this->subscriber->getSubscriberTitle();
+    }
+
     public function getDaysUsedAttribute(){
         return $this->starts_at->diffInDays(now());
     }
