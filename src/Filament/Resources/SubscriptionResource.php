@@ -4,6 +4,7 @@ namespace SaasPro\Subscriptions\Filament\Resources;
 
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Get;
+use Filament\Tables\Enums\ActionsPosition;
 use SaasPro\Filament\RelationManagers\HistoryRelationManager;
 use SaasPro\Subscriptions\Filament\Resources\SubscriptionResource\Pages;
 use SaasPro\Subscriptions\Models\PlanPrice;
@@ -28,8 +29,7 @@ class SubscriptionResource extends Resource
 
     protected static ?string $navigationGroup = 'Subscriptions';
 
-    public static function form(Form $form): Form
-    {
+    public static function form(Form $form): Form {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
@@ -104,7 +104,7 @@ class SubscriptionResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-            ])
+            ], position: ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

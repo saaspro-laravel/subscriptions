@@ -6,11 +6,16 @@ use Carbon\Carbon;
 use Exception;
 use SaasPro\Concerns\Models\HasHistory;
 use SaasPro\Contracts\SavesToHistory;
+use SaasPro\Features\Concerns\HasFeatureThrough;
 use SaasPro\Subscriptions\Enums\SubscriptionStatus;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use SaasPro\Enums\Timelines;
+use SaasPro\Features\Features;
+use SaasPro\Features\Models\Feature;
+use SaasPro\Features\Models\FeatureItem;
 use SaasPro\Subscriptions\Events\SubscriptionCancelled;
 use SaasPro\Subscriptions\Events\SubscriptionCreated;
 use SaasPro\Subscriptions\Events\SubscriptionEnded;
@@ -20,7 +25,7 @@ use SaasPro\Subscriptions\Events\SubscriptionUpdated;
 use SaasPro\Support\Token;
 
 class Subscription extends Model implements SavesToHistory {
-    use HasHistory;
+    use HasHistory, HasFeatureThrough;
     
     // 'provider', 'provider_id',
     protected $fillable = ['user_id', 'name', 'plan_id', 'price_id', 'expires_at', 'starts_at', 'meta', 'grace_ends_at', 'cancelled_at', 'reference'];
@@ -75,8 +80,29 @@ class Subscription extends Model implements SavesToHistory {
         return $this->morphTo();
     }
 
+    protected function getFeaturePivotColumns(){
+        return ['limit', 'reset_period', 'reset_interval'];
+    }
+
+    protected function getFeaturePivotColumn (){
+        return 'plan_id';
+    }
+
+    protected function featurePivotName(){
+        return 'subscription_features';
+    }
+
+    function resolveFeatures(Collection $features): Collection {
+        return $features->map(function($feature) {
+                    // $feature->limit = $feature->feature_item->limit ?? $feature->limit;
+                    // $feature->reset_period = $feature->feature_item->reset_period ?? $feature->reset_period;
+                    // $feature->reset_interval = $feature->feature_item->reset_interval ?? $feature->reset_interval;
+                    return $feature;
+                });
+    }
+
     public function plan(){
-        return $this->belongsTo(Plan::class, 'plan_id');
+        return $this->hasOne(Plan::class, 'id', 'plan_id');
     }
 
     function price() {
