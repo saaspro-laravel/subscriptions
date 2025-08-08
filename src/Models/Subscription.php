@@ -11,6 +11,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use SaasPro\Enums\Timelines;
+use SaasPro\Subscriptions\Events\SubscriptionCancelled;
+use SaasPro\Subscriptions\Events\SubscriptionCreated;
+use SaasPro\Subscriptions\Events\SubscriptionEnded;
+use SaasPro\Subscriptions\Events\SubscriptionRenewed;
+use SaasPro\Subscriptions\Events\SubscriptionResumed;
+use SaasPro\Subscriptions\Events\SubscriptionUpdated;
 use SaasPro\Support\Token;
 
 class Subscription extends Model implements SavesToHistory {
@@ -42,6 +48,12 @@ class Subscription extends Model implements SavesToHistory {
 
             if(!$subscription->reference) {
                 $subscription->reference = Token::random(8)->prepend('SUB-')->upper()->unique(Subscription::class, 'reference');
+            }
+        });
+
+        self::created(function($subscription){
+            if($subscription->isActive()) {
+                SubscriptionCreated::dispatch($subscription);
             }
         });
     }
@@ -144,14 +156,17 @@ class Subscription extends Model implements SavesToHistory {
         return $this->cancelled() == false;
     }
 
-    function renew(?Carbon $ends_at = null, ?bool $force = false){
+    // Actions
+    function renew(Carbon $ends_at, ?bool $force = false){
         if($this->ended() && !$force) {
-            throw new \Exception('Unable to renew canceled ended subscription.');
+            throw new \Exception('Your subscription is already expired. Please create a new subscription to continue.');
         }
         
-        $this->ends_at = $ends_at ?? now()->add($this->interval);
+        $this->ends_at = $ends_at;
         $this->cancelled_at = null;
         $this->save();
+
+        SubscriptionRenewed::dispatch($this);
 
         return $this;
     }
@@ -164,6 +179,9 @@ class Subscription extends Model implements SavesToHistory {
         }
 
         $this->save();
+
+        $immediately ? SubscriptionEnded::dispatch($this) : SubscriptionCancelled::dispatch($this);
+
         return $this;
     }
 
@@ -180,6 +198,8 @@ class Subscription extends Model implements SavesToHistory {
         $this->plan_id = $plan;
         $this->save();
 
+        SubscriptionUpdated::dispatch($this);
+
         return $this;
     }
 
@@ -191,6 +211,8 @@ class Subscription extends Model implements SavesToHistory {
         $this->cancelled_at = null;
         $this->expires_at = $this->starts_at->add($this->price->timeline->days(), 'days');
         $this->save();
+
+        SubscriptionResumed::dispatch($this);
 
         return $this;
     }
