@@ -2,11 +2,13 @@
 
 namespace SaasPro\Subscriptions\Filament\Resources\PlanResource\RelationManagers;
 
+use Carbon\CarbonInterval;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use SaasPro\Enums\Timelines;
 use SaasPro\Features\Models\Feature;
 
@@ -38,15 +40,21 @@ class FeaturesRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('feature.name'),
                 Tables\Columns\TextColumn::make('limit'),
-                Tables\Columns\TextColumn::make('reset_period'),
-                Tables\Columns\TextColumn::make('reset_interval')
-                    ->formatStateUsing(fn($state) => $state->label()),
+                Tables\Columns\TextColumn::make('resets')
+                            ->state(function(Model $record) {
+                                $period = $record->reset_period;
+                                $interval = $record->reset_interval;
+
+                                if(!$period || !$interval) return '';
+                                return "Every ".CarbonInterval::make($period, $interval->value);
+                            }),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()
+                    ->label("Add Feature"),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

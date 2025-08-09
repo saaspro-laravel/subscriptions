@@ -18,6 +18,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use SaasPro\Features\Filament\RelationManagers\FeaturesRelationManager;
 use SaasPro\Filament\Tables\Columns\StatusColumn;
 use SaasPro\Subscriptions\Models\Plan;
 
@@ -115,7 +116,8 @@ class SubscriptionResource extends Resource
     public static function getRelations(): array
     {
         return [
-            HistoryRelationManager::class
+            HistoryRelationManager::class,
+            FeaturesRelationManager::class
         ];
     }
 

@@ -80,25 +80,8 @@ class Subscription extends Model implements SavesToHistory {
         return $this->morphTo();
     }
 
-    protected function getFeaturePivotColumns(){
-        return ['limit', 'reset_period', 'reset_interval'];
-    }
-
     protected function getFeaturePivotColumn (){
         return 'plan_id';
-    }
-
-    protected function featurePivotName(){
-        return 'subscription_features';
-    }
-
-    function resolveFeatures(Collection $features): Collection {
-        return $features->map(function($feature) {
-                    // $feature->limit = $feature->feature_item->limit ?? $feature->limit;
-                    // $feature->reset_period = $feature->feature_item->reset_period ?? $feature->reset_period;
-                    // $feature->reset_interval = $feature->feature_item->reset_interval ?? $feature->reset_interval;
-                    return $feature;
-                });
     }
 
     public function plan(){
