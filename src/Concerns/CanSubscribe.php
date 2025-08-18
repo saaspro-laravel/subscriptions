@@ -21,7 +21,7 @@ trait CanSubscribe {
         return $this->morphMany(Subscription::class, 'subscriber')->isActive();
     }
 
-    public function getSubscriptionAttribute($name = 'default'){
+    public function subscription($name = 'default'){
         return $this->activeSubscriptions()->whereName($name)->first();
     }
 

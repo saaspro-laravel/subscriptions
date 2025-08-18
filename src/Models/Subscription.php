@@ -44,7 +44,7 @@ class Subscription extends Model implements SavesToHistory {
         'name' => 'default'
     ];
 
-    static public function booted(){
+    public static function booted(){
         self::creating(function($subscription){
             if(!$subscription->ends_at) {
                 $price = $subscription->price;
@@ -60,7 +60,7 @@ class Subscription extends Model implements SavesToHistory {
             if($subscription->isActive()) {
                 SubscriptionCreated::dispatch($subscription);
             }
-        });
+        }); 
     }
 
     function getHistoryEvent($event){
@@ -94,7 +94,9 @@ class Subscription extends Model implements SavesToHistory {
 
     // Scopes
     public function scopeIsActive(Builder $query){
-        $query->whereBeforeToday('expires_at')->orWhereAfterToday('trial_ends_at');
+        $query->whereNull('cancelled_at')
+            ->orWhereAfterToday('trial_ends_at')
+            ->whereBeforeToday('expires_at');
     }
     
     function scopeIsGrace(Builder $query){
